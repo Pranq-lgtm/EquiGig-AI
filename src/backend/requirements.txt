@@ -1,0 +1,7 @@
+fastapi==0.140.0
+uvicorn==0.51.0
+python-dotenv==1.0.1
+langgraph==1.2.9
+pydantic==2.13.4
+google-genai==2.14.0
+endee==2.1.0

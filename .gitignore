@@ -1,0 +1,16 @@
+# Environment and Secret files (DO NOT COMMIT)
+.env
+.env.local
+*.env
+
+# Python Cache & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# OS specific files
+.DS_Store
+Thumbs.db

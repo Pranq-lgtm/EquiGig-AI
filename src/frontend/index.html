@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EquiGig AI - LangGraph Autonomous Negotiation Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <div>
+                    <h1>EquiGig <span>AI</span></h1>
+                    <p class="tagline">Autonomous Gig Worker Protection & LangGraph Negotiation Agent</p>
+                </div>
+            </div>
+            <div class="header-badges">
+                <div class="status-badge" id="envStatusPill">
+                    <span class="dot yellow"></span>
+                    <span class="text">Checking .env...</span>
+                </div>
+                <div class="status-badge" id="apiStatusPill">
+                    <span class="dot green"></span>
+                    <span class="text">API Engine: Ready</span>
+                </div>
+                <div class="status-badge" id="vectorStatusPill">
+                    <span class="dot blue"></span>
+                    <span class="text">Endee.io Vector DB: Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-layout">
+            <!-- Top Controls & Scenarios -->
+            <section class="presets-section">
+                <div class="presets-header">
+                    <span class="label">⚡ Quick Scenarios & Contract Templates:</span>
+                    <div class="preset-buttons" id="presetButtons">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Input Grid -->
+            <div class="input-grid">
+                <!-- Worker Profile Card -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="icon-bubble purple">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <h3>Gig Worker Profile</h3>
+                    </div>
+                    <div class="form-group">
+                        <label for="workerName">Worker Full Name</label>
+                        <input type="text" id="workerName" value="Jane Doe" placeholder="e.g. Jane Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="workerSkills">Skills (comma separated)</label>
+                        <input type="text" id="workerSkills" value="Python, LangGraph, Machine Learning, FastAPI" placeholder="Python, React, Data Science">
+                    </div>
+                    <div class="form-group">
+                        <label for="minHourlyRate">Minimum Target Hourly Rate ($/hr)</label>
+                        <div class="range-input-wrapper">
+                            <input type="number" id="minHourlyRate" value="30" min="15" max="250" step="5">
+                            <span class="unit-tag">USD / hour</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Targeted Job & Contract Card -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <div class="icon-bubble blue">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </div>
+                        <h3>Targeted Job & Proposed Terms</h3>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="jobTitle">Job Title</label>
+                            <input type="text" id="jobTitle" value="Junior Data Scientist & AI Developer">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="companyName">Company</label>
+                            <input type="text" id="companyName" value="TechCorp Solutions">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="proposedRate">Client Proposed Rate ($/hr)</label>
+                        <div class="range-input-wrapper">
+                            <input type="number" id="proposedRate" value="25" min="10" max="300" step="5">
+                            <span class="unit-tag">USD / hour</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contractClauses">Contract Clauses & Snippets</label>
+                        <textarea id="contractClauses" rows="3" placeholder="Enter contract clauses (one per line)">Employee agrees to a 2-year non-compete clause post-engagement.
+Payment is net-90 days upon invoice receipt.
+All intellectual property developed off-hours remains company property.</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Run CTA Button -->
+            <div class="cta-container">
+                <button id="runAgentBtn" class="btn-primary">
+                    <span class="btn-icon">⚡</span>
+                    <span class="btn-text">Execute LangGraph Agent Workflow</span>
+                </button>
+            </div>
+
+            <!-- LangGraph Pipeline Visualizer -->
+            <section class="glass-card pipeline-section">
+                <div class="card-header">
+                    <div class="icon-bubble pink">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                    </div>
+                    <h3>LangGraph Agent Execution Pipeline</h3>
+                    <span class="pipeline-status" id="pipelineStatusText">Ready for execution</span>
+                </div>
+
+                <div class="pipeline-graph">
+                    <!-- Node 1 -->
+                    <div class="node-box" id="node-analyze">
+                        <div class="node-badge">Node 1</div>
+                        <div class="node-title">Analyze Profile</div>
+                        <div class="node-sub">Worker Rates & Skills</div>
+                        <div class="node-indicator"></div>
+                    </div>
+                    <div class="pipe-line" id="pipe-1"></div>
+
+                    <!-- Node 2 -->
+                    <div class="node-box" id="node-search">
+                        <div class="node-badge">Node 2</div>
+                        <div class="node-title">Search Jobs</div>
+                        <div class="node-sub">Match Gig & Contract</div>
+                        <div class="node-indicator"></div>
+                    </div>
+                    <div class="pipe-line" id="pipe-2"></div>
+
+                    <!-- Node 3 -->
+                    <div class="node-box" id="node-review">
+                        <div class="node-badge">Node 3</div>
+                        <div class="node-title">Review Contract</div>
+                        <div class="node-sub">Scan Exploitative Terms</div>
+                        <div class="node-indicator"></div>
+                    </div>
+                    <div class="pipe-line" id="pipe-3"></div>
+
+                    <!-- Decision Node -->
+                    <div class="node-box decision" id="node-decision">
+                        <div class="node-badge">Branch</div>
+                        <div class="node-title">Issues Found?</div>
+                        <div class="node-sub">Conditional Edge</div>
+                        <div class="node-indicator"></div>
+                    </div>
+                    <div class="pipe-line" id="pipe-4"></div>
+
+                    <!-- Node 4 -->
+                    <div class="node-box action" id="node-negotiate">
+                        <div class="node-badge">Node 4</div>
+                        <div class="node-title">Negotiate & Counter</div>
+                        <div class="node-sub">Auto Rate Boost & Fixes</div>
+                        <div class="node-indicator"></div>
+                    </div>
+                    <div class="pipe-line" id="pipe-5"></div>
+
+                    <!-- Node 5 -->
+                    <div class="node-box" id="node-email">
+                        <div class="node-badge">Node 5</div>
+                        <div class="node-title">Draft Email</div>
+                        <div class="node-sub">Auto-Reply to Client</div>
+                        <div class="node-indicator"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Output Grid -->
+            <div class="results-grid">
+                <!-- Risk & Issues Card -->
+                <div class="glass-card result-card">
+                    <div class="card-header">
+                        <div class="icon-bubble red">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                        <h3>Identified Contract Risks</h3>
+                    </div>
+                    <div class="issues-list" id="issuesList">
+                        <div class="empty-state">Run execution to scan contract risks...</div>
+                    </div>
+                </div>
+
+                <!-- Negotiation Settlement Card -->
+                <div class="glass-card result-card">
+                    <div class="card-header">
+                        <div class="icon-bubble green">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Negotiation Outcome</h3>
+                    </div>
+                    <div id="negotiationSummary" class="negotiation-summary">
+                        <div class="empty-state">No negotiation data yet</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-Generated Email Reply -->
+            <section class="glass-card email-section">
+                <div class="card-header">
+                    <div class="icon-bubble purple">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Auto-Generated Email Reply</h3>
+                </div>
+                <div class="email-preview" id="emailPreview">
+                    <div class="empty-state">Run execution to draft email reply...</div>
+                </div>
+            </section>
+
+            <!-- Endee.io Vector DB RAG Insights -->
+            <section class="glass-card endee-section">
+                <div class="card-header">
+                    <div class="icon-bubble blue">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M21 19c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14"></path>
+                            <path d="M21 5v14"></path>
+                        </svg>
+                    </div>
+                    <h3>Endee.io Vector DB Benchmark & RAG Insights</h3>
+                    <span class="rag-badge" id="endeeSourceBadge">Collection: equigig_contracts</span>
+                </div>
+                <div class="endee-grid" id="endeeRagCard">
+                    <div class="empty-state">Run execution to retrieve vector similarity benchmarks from Endee.io...</div>
+                </div>
+            </section>
+
+            <!-- Agent Execution Terminal / Logs -->
+            <section class="glass-card terminal-card">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="terminal-title">LangGraph Agent Reasoning Terminal</span>
+                    <button class="btn-xs" id="clearLogsBtn">Clear Logs</button>
+                </div>
+                <div class="terminal-body" id="terminalLogs">
+                    <div class="log-entry system">[System]: EquiGig LangGraph Engine Ready. Environment key loaded from .env.</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>EquiGig AI &copy; 2026 | Powered by LangGraph State Machine & FastAPI Backend</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
