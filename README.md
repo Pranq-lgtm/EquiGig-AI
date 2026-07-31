@@ -69,8 +69,8 @@ The console will output the agent's step-by-step reasoning logs, starting from p
 
 ## **🤝 Contributing**
 
-We welcome contributions from developers, labor rights advocates, and AI ethics researchers\! Please see our [CONTRIBUTING.md](http://docs.google.com/CONTRIBUTING.md) for guidelines on how to submit pull requests, report bugs, and suggest new features to help protect gig workers globally.
+We welcome contributions from developers, labor rights advocates, and AI ethics researchers\! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit pull requests, report bugs, and suggest new features to help protect gig workers globally.
 
 ## **📄 License**
 
-This project is licensed under the MIT License \- see the [LICENSE](http://docs.google.com/LICENSE) file for details.
+This project is licensed under the MIT License \- see the [LICENSE](LICENSE) file for details.
