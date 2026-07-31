@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearLogsBtn = document.getElementById('clearLogsBtn');
 
     // Initialize API Status Checks & Presets
+    // Set this to your Render backend URL when deploying to Vercel (e.g., 'https://your-backend.onrender.com')
+    // Leave as empty string ('') if hosting frontend and backend together.
+    const API_BASE_URL = '';
+
     checkHealth();
     loadPresets();
 
@@ -41,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API Functions ---
     async function checkHealth() {
         try {
-            const res = await fetch('/api/health');
+            const res = await fetch(`${API_BASE_URL}/api/health`);
             if (res.ok) {
                 const data = await res.json();
                 
@@ -73,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadPresets() {
         try {
-            const res = await fetch('/api/presets');
+            const res = await fetch(`${API_BASE_URL}/api/presets`);
             if (res.ok) {
                 const data = await res.json();
                 presetButtons.innerHTML = '';
@@ -140,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             appendLog(`[LangGraph Node 3]: Scanning contract clauses for risks against minimum target ($${payload.user_profile.min_hourly_rate}/hr)...`, 'agent');
 
             // Call Backend REST API
-            const response = await fetch('/api/run-agent', {
+            const response = await fetch(`${API_BASE_URL}/api/run-agent`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
