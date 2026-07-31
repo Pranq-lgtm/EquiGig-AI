@@ -5,16 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiStatusPill = document.getElementById('apiStatusPill');
     const vectorStatusPill = document.getElementById('vectorStatusPill');
     const presetButtons = document.getElementById('presetButtons');
-    
+
     const workerNameInput = document.getElementById('workerName');
     const workerSkillsInput = document.getElementById('workerSkills');
     const minHourlyRateInput = document.getElementById('minHourlyRate');
-    
+
     const jobTitleInput = document.getElementById('jobTitle');
     const companyNameInput = document.getElementById('companyName');
     const proposedRateInput = document.getElementById('proposedRate');
     const contractClausesInput = document.getElementById('contractClauses');
-    
+
     const runAgentBtn = document.getElementById('runAgentBtn');
     const pipelineStatusText = document.getElementById('pipelineStatusText');
     const issuesList = document.getElementById('issuesList');
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize API Status Checks & Presets
     // Set this to your Render backend URL when deploying to Vercel (e.g., 'https://your-backend.onrender.com')
     // Leave as empty string ('') if hosting frontend and backend together.
-    const API_BASE_URL = '';
+    const API_BASE_URL = 'https://equigig-ai.onrender.com';
 
     checkHealth();
     loadPresets();
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`${API_BASE_URL}/api/health`);
             if (res.ok) {
                 const data = await res.json();
-                
+
                 // Update env badge
                 if (data.env_file_loaded) {
                     envStatusPill.innerHTML = `<span class="dot green"></span><span class="text">.env Loaded (${data.api_provider})</span>`;
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pipe5 = document.getElementById('pipe-5');
                 if (pipe5) pipe5.classList.add('active');
             }
-            
+
             // Step 5 Animation: Draft Email Node
             await animateNode('node-email', null, 400);
 
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Promise(resolve => {
             const node = document.getElementById(nodeId);
             if (node) node.classList.add('active');
-            
+
             setTimeout(() => {
                 if (node) {
                     node.classList.remove('active');
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If negotiation occurred, we check pre-negotiation issues log or result logs
         const originalProposedRate = payload.custom_job.proposed_rate;
         const minRate = payload.user_profile.min_hourly_rate;
-        
+
         let detectedIssues = [];
         if (originalProposedRate < minRate) {
             detectedIssues.push(`Underpaid: Offered $${originalProposedRate}/hr vs Target $${minRate}/hr`);
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rag = result.endee_rag_insights || {};
         if (rag.role_category) {
             if (endeeSourceBadge) endeeSourceBadge.textContent = rag.source || "Endee.io Vector DB";
-            
+
             const risksHtml = (rag.known_clause_risks || []).map(r => `<div style="font-size:0.85rem; color:#9ca3af; margin-bottom:6px;">🔹 ${r}</div>`).join('');
 
             endeeRagCard.innerHTML = `
