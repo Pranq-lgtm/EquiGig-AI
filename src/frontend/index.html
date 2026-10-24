@@ -94,6 +94,83 @@
                         </div>
                         <h3>Targeted Job & Proposed Terms</h3>
                     </div>
+
+                    <!-- Job Listing URL Auto-Extractor -->
+                    <div class="url-importer-box">
+                        <div class="importer-top-row">
+                            <div class="importer-title-group">
+                                <span class="magic-icon">✨</span>
+                                <span class="importer-title">Auto-Fill from Job Listing URL</span>
+                                <span class="badge-gemini">Gemini AI</span>
+                            </div>
+                            <button type="button" class="btn-link" id="toggleRawTextBtn">Paste raw job text</button>
+                        </div>
+
+                        <div class="url-input-container">
+                            <div class="url-field-wrap">
+                                <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                                <input type="url" id="jobUrlInput" placeholder="Paste job URL (e.g. LinkedIn, Indeed, Greenhouse, Upwork, Lever)..." autocomplete="off">
+                                <button type="button" id="clearUrlBtn" class="clear-url-btn" title="Clear">✕</button>
+                            </div>
+                            <button type="button" id="extractJobBtn" class="btn-extract">
+                                <span class="spinner" id="extractSpinner" style="display: none;"></span>
+                                <span id="extractBtnText">✨ Search & Fill</span>
+                            </button>
+                        </div>
+
+                        <!-- Sample Quick URLs -->
+                        <div class="sample-links-bar" id="sampleLinksBar">
+                            <span class="sample-label">⚡ Try sample:</span>
+                            <button type="button" class="sample-chip" data-url="https://boards.greenhouse.io/anthropic/jobs/senior-ai-engineer">Anthropic AI ($70/hr)</button>
+                            <button type="button" class="sample-chip" data-url="https://jobs.lever.co/stripe/staff-backend-developer">Stripe Backend ($60/hr)</button>
+                            <button type="button" class="sample-chip" data-url="https://remoteok.com/remote-jobs/senior-react-developer">RemoteOk React ($45/hr)</button>
+                        </div>
+
+                        <!-- Collapsible Raw Text Input -->
+                        <div class="raw-text-panel" id="rawTextPanel" style="display: none;">
+                            <label for="rawJobTextInput" class="raw-text-label">Paste Raw Job Description / Posting Content:</label>
+                            <textarea id="rawJobTextInput" rows="4" placeholder="If the site requires login (like LinkedIn or Upwork), copy and paste the job description text here..."></textarea>
+                            <div class="raw-text-actions">
+                                <button type="button" id="extractRawTextBtn" class="btn-secondary-sm">Extract from Text</button>
+                                <button type="button" id="cancelRawTextBtn" class="btn-link-sm">Close</button>
+                            </div>
+                        </div>
+
+                        <!-- Extracted Preview Banner (shown upon extraction) -->
+                        <div class="extracted-preview-panel" id="extractedPreviewPanel" style="display: none;">
+                            <div class="preview-header">
+                                <div class="preview-badge success">
+                                    <span class="check-icon">✓</span>
+                                    <span>Job Extracted & Auto-Filled</span>
+                                </div>
+                                <span class="preview-method" id="previewMethodTag">Gemini AI Engine</span>
+                            </div>
+                            <p class="preview-summary" id="previewSummaryText"></p>
+                            <div class="preview-meta-row">
+                                <div class="preview-salary-pill">
+                                    <span class="pill-label">Detected Salary:</span>
+                                    <span class="pill-val" id="previewSalaryText">$0/hr</span>
+                                </div>
+                                <div class="preview-skills-container">
+                                    <span class="pill-label">Required Skills:</span>
+                                    <div class="skills-chips" id="previewSkillsList"></div>
+                                </div>
+                            </div>
+                            <div class="preview-actions">
+                                <button type="button" id="syncSkillsBtn" class="btn-sync-skills">
+                                    <span>➕ Add Detected Skills to My Profile</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="divider-text">
+                        <span>REVIEW OR FINE-TUNE CONTRACT TERMS</span>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group flex-1">
                             <label for="jobTitle">Job Title</label>

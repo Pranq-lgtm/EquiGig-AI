@@ -25,9 +25,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const terminalLogs = document.getElementById('terminalLogs');
     const clearLogsBtn = document.getElementById('clearLogsBtn');
 
-    // Initialize API Status Checks & Presets
+    // Job Listing URL Auto-Extractor Elements
+    const jobUrlInput = document.getElementById('jobUrlInput');
+    const clearUrlBtn = document.getElementById('clearUrlBtn');
+    const extractJobBtn = document.getElementById('extractJobBtn');
+    const extractSpinner = document.getElementById('extractSpinner');
+    const extractBtnText = document.getElementById('extractBtnText');
+    const toggleRawTextBtn = document.getElementById('toggleRawTextBtn');
+    const rawTextPanel = document.getElementById('rawTextPanel');
+    const rawJobTextInput = document.getElementById('rawJobTextInput');
+    const extractRawTextBtn = document.getElementById('extractRawTextBtn');
+    const cancelRawTextBtn = document.getElementById('cancelRawTextBtn');
+    const sampleLinksBar = document.getElementById('sampleLinksBar');
+    const extractedPreviewPanel = document.getElementById('extractedPreviewPanel');
+    const previewSummaryText = document.getElementById('previewSummaryText');
+    const previewSalaryText = document.getElementById('previewSalaryText');
+    const previewSkillsList = document.getElementById('previewSkillsList');
+    const previewMethodTag = document.getElementById('previewMethodTag');
+    const syncSkillsBtn = document.getElementById('syncSkillsBtn');
+
+    let currentExtractedSkills = [];
+
+    // Initialize API Status Checks, Presets & URL Extractor
     checkHealth();
     loadPresets();
+    initJobUrlExtractor();
 
     // Clear logs handler
     clearLogsBtn.addEventListener('click', () => {
@@ -320,6 +342,193 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${risksHtml}
                 </div>
             `;
+        }
+    }
+
+    // --- Job Listing URL Auto-Extractor Functions ---
+    function initJobUrlExtractor() {
+        if (!jobUrlInput || !extractJobBtn) return;
+
+        // URL input listener to toggle clear button
+        jobUrlInput.addEventListener('input', () => {
+            clearUrlBtn.style.display = jobUrlInput.value.trim() ? 'block' : 'none';
+        });
+
+        // Clear button
+        clearUrlBtn.addEventListener('click', () => {
+            jobUrlInput.value = '';
+            clearUrlBtn.style.display = 'none';
+            jobUrlInput.focus();
+        });
+
+        // Enter key in URL input
+        jobUrlInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performJobExtraction(jobUrlInput.value.trim(), null);
+            }
+        });
+
+        // Extract button click
+        extractJobBtn.addEventListener('click', () => {
+            const url = jobUrlInput.value.trim();
+            if (!url) {
+                jobUrlInput.focus();
+                appendLog('[Job Extractor]: Please paste a job listing URL or use the sample links below.', 'warning');
+                return;
+            }
+            performJobExtraction(url, null);
+        });
+
+        // Sample quick links chips
+        const sampleChips = document.querySelectorAll('.sample-chip');
+        sampleChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const url = chip.dataset.url;
+                if (url) {
+                    jobUrlInput.value = url;
+                    clearUrlBtn.style.display = 'block';
+                    performJobExtraction(url, null);
+                }
+            });
+        });
+
+        // Toggle raw text panel
+        if (toggleRawTextBtn && rawTextPanel) {
+            toggleRawTextBtn.addEventListener('click', () => {
+                const isHidden = rawTextPanel.style.display === 'none';
+                rawTextPanel.style.display = isHidden ? 'block' : 'none';
+                if (isHidden && rawJobTextInput) rawJobTextInput.focus();
+            });
+        }
+
+        // Cancel raw text panel
+        if (cancelRawTextBtn && rawTextPanel) {
+            cancelRawTextBtn.addEventListener('click', () => {
+                rawTextPanel.style.display = 'none';
+            });
+        }
+
+        // Extract from raw text button
+        if (extractRawTextBtn && rawJobTextInput) {
+            extractRawTextBtn.addEventListener('click', () => {
+                const text = rawJobTextInput.value.trim();
+                if (!text) {
+                    appendLog('[Job Extractor]: Please paste raw job posting text before extracting.', 'warning');
+                    return;
+                }
+                performJobExtraction(null, text);
+            });
+        }
+
+        // Sync skills to worker profile button
+        if (syncSkillsBtn) {
+            syncSkillsBtn.addEventListener('click', syncSkillsToProfile);
+        }
+    }
+
+    async function performJobExtraction(url, rawText) {
+        if (!url && !rawText) return;
+
+        // UI Loading State
+        extractSpinner.style.display = 'inline-block';
+        extractBtnText.textContent = 'Analyzing...';
+        extractJobBtn.disabled = true;
+
+        const targetLabel = url || 'pasted job text';
+        appendLog(`[Job Extractor]: Fetching and analyzing listing from ${targetLabel}...`, 'agent');
+
+        try {
+            const response = await fetch('/api/extract-job', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url || null, raw_text: rawText || null })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({ detail: 'Extraction failed' }));
+                throw new Error(errData.detail || `Server returned status ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Auto-populate form inputs
+            jobTitleInput.value = data.title || '';
+            companyNameInput.value = data.company || '';
+            proposedRateInput.value = data.proposed_rate || 35;
+            contractClausesInput.value = (data.contract_snippet || []).join('\n');
+
+            // Trigger visual pulse animation on auto-filled fields
+            [jobTitleInput, companyNameInput, proposedRateInput, contractClausesInput].forEach(el => {
+                if (el) {
+                    el.classList.remove('field-highlight');
+                    void el.offsetWidth; // force DOM reflow
+                    el.classList.add('field-highlight');
+                }
+            });
+
+            // Store extracted skills for 1-click sync
+            currentExtractedSkills = data.required_skills || [];
+
+            // Render Extracted Preview Panel
+            if (extractedPreviewPanel) {
+                previewSummaryText.textContent = data.description_summary || 'Role details successfully extracted.';
+                previewSalaryText.textContent = `$${data.proposed_rate}/hr (${data.salary_raw || 'Rate Estimated'})`;
+                previewMethodTag.textContent = data.extraction_method || 'AI Extractor';
+
+                if (previewSkillsList) {
+                    previewSkillsList.innerHTML = currentExtractedSkills.map(skill =>
+                        `<span class="skill-chip">${skill}</span>`
+                    ).join('');
+                }
+
+                extractedPreviewPanel.style.display = 'block';
+            }
+
+            // Close raw text panel if open
+            if (rawTextPanel) rawTextPanel.style.display = 'none';
+
+            appendLog(
+                `[Job Extractor]: Success! Auto-filled '${data.title}' at ${data.company}. ` +
+                `Salary: $${data.proposed_rate}/hr. Extracted ${currentExtractedSkills.length} required skill(s) & contract clauses.`,
+                'success'
+            );
+
+        } catch (err) {
+            appendLog(`[Job Extractor Error]: ${err.message}`, 'warning');
+        } finally {
+            extractSpinner.style.display = 'none';
+            extractBtnText.textContent = '✨ Search & Fill';
+            extractJobBtn.disabled = false;
+        }
+    }
+
+    function syncSkillsToProfile() {
+        if (!currentExtractedSkills || currentExtractedSkills.length === 0) return;
+
+        const currentSkills = workerSkillsInput.value.split(',').map(s => s.trim()).filter(Boolean);
+        const lowerSet = new Set(currentSkills.map(s => s.toLowerCase()));
+
+        let addedCount = 0;
+        currentExtractedSkills.forEach(s => {
+            if (!lowerSet.has(s.toLowerCase())) {
+                currentSkills.push(s);
+                lowerSet.add(s.toLowerCase());
+                addedCount++;
+            }
+        });
+
+        workerSkillsInput.value = currentSkills.join(', ');
+
+        // Animate worker skills input
+        workerSkillsInput.classList.remove('field-highlight');
+        void workerSkillsInput.offsetWidth;
+        workerSkillsInput.classList.add('field-highlight');
+
+        if (addedCount > 0) {
+            appendLog(`[Worker Profile]: Synchronized ${addedCount} new skill(s) from job listing into worker profile!`, 'success');
+        } else {
+            appendLog(`[Worker Profile]: Worker profile already contains all detected skills.`, 'system');
         }
     }
 

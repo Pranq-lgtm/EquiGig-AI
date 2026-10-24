@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 
 from equigig_langgraph_agent import run_agent, API_KEY, IS_MOCK_KEY
 from endee_service import get_endee_status
+from job_extractor import extract_job_from_url_or_text, SAMPLE_URL_MOCKS
 
 load_dotenv()
 
@@ -51,6 +52,10 @@ class JobDataSchema(BaseModel):
         ],
         description="Contract clauses"
     )
+
+class ExtractJobRequest(BaseModel):
+    url: Optional[str] = Field(default=None, description="Job listing URL")
+    raw_text: Optional[str] = Field(default=None, description="Pasted job description text if URL is behind a login wall")
 
 class AgentRequestSchema(BaseModel):
     user_profile: UserProfileSchema
@@ -131,6 +136,40 @@ def get_presets():
             }
         ]
     }
+
+@app.post("/api/extract-job")
+def extract_job_endpoint(payload: ExtractJobRequest):
+    """
+    Extracts job title, company, salary/rate, required skills, and contract terms
+    from a job listing URL or pasted job text using Gemini AI & heuristic fallback.
+    """
+    try:
+        result = extract_job_from_url_or_text(url=payload.url, raw_text=payload.raw_text)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/api/sample-jobs")
+def get_sample_jobs():
+    """
+    Returns curated sample job URLs for instant demonstration and testing.
+    """
+    samples = []
+    labels = {
+        "https://boards.greenhouse.io/anthropic/jobs/senior-ai-engineer": "Anthropic AI Workflow Engineer ($70/hr)",
+        "https://jobs.lever.co/stripe/staff-backend-developer": "Stripe Staff Backend Engineer ($60/hr)",
+        "https://remoteok.com/remote-jobs/senior-react-developer": "RemoteOk React Contractor ($45/hr)"
+    }
+    for url, data in SAMPLE_URL_MOCKS.items():
+        samples.append({
+            "url": url,
+            "label": labels.get(url, data.get("title", "Job Posting")),
+            "title": data.get("title"),
+            "company": data.get("company"),
+            "rate": data.get("proposed_rate"),
+            "skills": data.get("required_skills", [])
+        })
+    return {"samples": samples}
 
 @app.post("/api/run-agent")
 def run_agent_endpoint(payload: AgentRequestSchema):

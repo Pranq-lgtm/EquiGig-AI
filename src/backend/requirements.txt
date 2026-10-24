@@ -5,3 +5,4 @@ langgraph==1.2.9
 pydantic==2.13.4
 google-genai==2.14.0
 endee==2.1.0
+httpx==0.28.1
