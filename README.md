@@ -18,31 +18,21 @@ For freelancers, gig workers, and entry-level professionals, the modern job mark
 equigig-ai/  
 │  
 ├── src/                        \# Main source code directory  
-│   ├── agent/                  \# LangGraph agent definitions  
-│   │   ├── \_\_init\_\_.py  
-│   │   ├── graph.py            \# StateGraph setup and routing  
-│   │   ├── nodes.py            \# Node logic (analyze, search, review, negotiate)  
-│   │   └── state.py            \# TypedDict definitions for Agent State  
+│   ├── backend/                \# Backend services and agent definitions
+│   │   ├── endee\_service.py
+│   │   ├── equigig\_langgraph\_agent.py
+│   │   ├── requirements.txt    \# Python dependencies for backend
+│   │   └── server.py           \# Entry point for the backend server
 │   │  
-│   ├── tools/                  \# Custom tools for the agent  
-│   │   ├── contract\_parser.py  \# NLP logic for finding exploitative clauses  
-│   │   └── job\_search.py       \# Vector DB integration for job matching  
-│   │  
-│   ├── data/                   \# Data processing and schemas  
-│   │   └── schemas.py          \# Pydantic models for user profiles and jobs  
-│   │  
-│   └── main.py                 \# Entry point to run the EquiGig agent  
+│   └── frontend/               \# Frontend user interface
+│       ├── .env.example        \# Example environment variables
+│       ├── app.js
+│       ├── index.html
+│       └── styles.css
 │  
-├── tests/                      \# Unit and integration tests  
-│   ├── test\_contract\_parser.py  
-│   └── test\_graph\_routing.py  
-│  
-├── docs/                       \# Project documentation and architecture  
-│   └── architecture.md  
-│  
-├── .env.example                \# Example environment variables  
-├── requirements.txt            \# Python dependencies  
 ├── .gitignore  
+├── Dockerfile                  \# Docker configuration
+├── LICENSE
 └── README.md                   \# Project documentation
 
 ## **🚀 Getting Started**
@@ -79,8 +69,8 @@ The console will output the agent's step-by-step reasoning logs, starting from p
 
 ## **🤝 Contributing**
 
-We welcome contributions from developers, labor rights advocates, and AI ethics researchers\! Please see our [CONTRIBUTING.md](http://docs.google.com/CONTRIBUTING.md) for guidelines on how to submit pull requests, report bugs, and suggest new features to help protect gig workers globally.
+We welcome contributions from developers, labor rights advocates, and AI ethics researchers\! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to submit pull requests, report bugs, and suggest new features to help protect gig workers globally.
 
 ## **📄 License**
 
-This project is licensed under the MIT License \- see the [LICENSE](http://docs.google.com/LICENSE) file for details.
+This project is licensed under the MIT License \- see the [LICENSE](LICENSE) file for details.

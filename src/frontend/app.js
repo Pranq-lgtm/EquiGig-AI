@@ -5,16 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiStatusPill = document.getElementById('apiStatusPill');
     const vectorStatusPill = document.getElementById('vectorStatusPill');
     const presetButtons = document.getElementById('presetButtons');
-    
+
     const workerNameInput = document.getElementById('workerName');
     const workerSkillsInput = document.getElementById('workerSkills');
     const minHourlyRateInput = document.getElementById('minHourlyRate');
-    
+
     const jobTitleInput = document.getElementById('jobTitle');
     const companyNameInput = document.getElementById('companyName');
     const proposedRateInput = document.getElementById('proposedRate');
     const contractClausesInput = document.getElementById('contractClauses');
-    
+
     const runAgentBtn = document.getElementById('runAgentBtn');
     const pipelineStatusText = document.getElementById('pipelineStatusText');
     const issuesList = document.getElementById('issuesList');
@@ -25,28 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const terminalLogs = document.getElementById('terminalLogs');
     const clearLogsBtn = document.getElementById('clearLogsBtn');
 
-    // Job Listing URL Auto-Extractor Elements
-    const jobUrlInput = document.getElementById('jobUrlInput');
-    const clearUrlBtn = document.getElementById('clearUrlBtn');
-    const extractJobBtn = document.getElementById('extractJobBtn');
-    const extractSpinner = document.getElementById('extractSpinner');
-    const extractBtnText = document.getElementById('extractBtnText');
-    const toggleRawTextBtn = document.getElementById('toggleRawTextBtn');
-    const rawTextPanel = document.getElementById('rawTextPanel');
-    const rawJobTextInput = document.getElementById('rawJobTextInput');
-    const extractRawTextBtn = document.getElementById('extractRawTextBtn');
-    const cancelRawTextBtn = document.getElementById('cancelRawTextBtn');
-    const sampleLinksBar = document.getElementById('sampleLinksBar');
-    const extractedPreviewPanel = document.getElementById('extractedPreviewPanel');
-    const previewSummaryText = document.getElementById('previewSummaryText');
-    const previewSalaryText = document.getElementById('previewSalaryText');
-    const previewSkillsList = document.getElementById('previewSkillsList');
-    const previewMethodTag = document.getElementById('previewMethodTag');
-    const syncSkillsBtn = document.getElementById('syncSkillsBtn');
-
-    let currentExtractedSkills = [];
-
-    // Initialize API Status Checks, Presets & URL Extractor
+    // Initialize API Status Checks & Presets
     checkHealth();
     loadPresets();
     initJobUrlExtractor();
@@ -63,10 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API Functions ---
     async function checkHealth() {
         try {
-            const res = await fetch('/api/health');
+            const res = await fetch(`${API_BASE_URL}/api/health`);
             if (res.ok) {
                 const data = await res.json();
-                
+
                 // Update env badge
                 if (data.env_file_loaded) {
                     envStatusPill.innerHTML = `<span class="dot green"></span><span class="text">.env Loaded (${data.api_provider})</span>`;
@@ -95,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadPresets() {
         try {
-            const res = await fetch('/api/presets');
+            const res = await fetch(`${API_BASE_URL}/api/presets`);
             if (res.ok) {
                 const data = await res.json();
                 presetButtons.innerHTML = '';
@@ -162,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             appendLog(`[LangGraph Node 3]: Scanning contract clauses for risks against minimum target ($${payload.user_profile.min_hourly_rate}/hr)...`, 'agent');
 
             // Call Backend REST API
-            const response = await fetch('/api/run-agent', {
+            const response = await fetch(`${API_BASE_URL}/api/run-agent`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -185,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pipe5 = document.getElementById('pipe-5');
                 if (pipe5) pipe5.classList.add('active');
             }
-            
+
             // Step 5 Animation: Draft Email Node
             await animateNode('node-email', null, 400);
 
@@ -226,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Promise(resolve => {
             const node = document.getElementById(nodeId);
             if (node) node.classList.add('active');
-            
+
             setTimeout(() => {
                 if (node) {
                     node.classList.remove('active');
@@ -254,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // If negotiation occurred, we check pre-negotiation issues log or result logs
         const originalProposedRate = payload.custom_job.proposed_rate;
         const minRate = payload.user_profile.min_hourly_rate;
-        
+
         let detectedIssues = [];
         if (originalProposedRate < minRate) {
             detectedIssues.push(`Underpaid: Offered $${originalProposedRate}/hr vs Target $${minRate}/hr`);
@@ -323,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rag = result.endee_rag_insights || {};
         if (rag.role_category) {
             if (endeeSourceBadge) endeeSourceBadge.textContent = rag.source || "Endee.io Vector DB";
-            
+
             const risksHtml = (rag.known_clause_risks || []).map(r => `<div style="font-size:0.85rem; color:#9ca3af; margin-bottom:6px;">🔹 ${r}</div>`).join('');
 
             endeeRagCard.innerHTML = `
