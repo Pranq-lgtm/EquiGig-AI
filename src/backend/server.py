@@ -14,11 +14,19 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+for env_candidate in [
+    os.path.join(BASE_DIR, ".env"),
+    os.path.abspath(os.path.join(BASE_DIR, "..", "..", ".env")),
+    ".env"
+]:
+    if os.path.exists(env_candidate):
+        load_dotenv(env_candidate)
+        break
+
 from equigig_langgraph_agent import run_agent, API_KEY, IS_MOCK_KEY
 from endee_service import get_endee_status
 from job_extractor import extract_job_from_url_or_text, SAMPLE_URL_MOCKS
-
-load_dotenv()
 
 app = FastAPI(
     title="EquiGig AI Agent API",
@@ -79,7 +87,7 @@ def get_health_status():
         "api_provider": active_provider,
         "is_mock_key": IS_MOCK_KEY,
         "masked_key": key_masked,
-        "env_file_loaded": os.path.exists(".env"),
+        "env_file_loaded": any(os.path.exists(p) for p in [os.path.join(BASE_DIR, ".env"), ".env"]),
         "vector_db": vector_status,
         "environment": os.getenv("ENVIRONMENT", "development")
     }
@@ -189,19 +197,15 @@ def run_agent_endpoint(payload: AgentRequestSchema):
         raise HTTPException(status_code=500, detail=f"Agent execution error: {str(e)}")
 
 # Serve Static Frontend Files
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Since server.py is in src/backend, frontend is in src/frontend
 frontend_dir = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend"))
 
 if os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
-
-@app.get("/")
-def read_root():
-    index_path = os.path.join(frontend_dir, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {"message": "EquiGig AI Backend API is running. Access /api/health for status."}
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+else:
+    @app.get("/")
+    def read_root():
+        return {"message": "EquiGig AI Backend API is running. Access /api/health for status."}
 
 if __name__ == "__main__":
     import uvicorn

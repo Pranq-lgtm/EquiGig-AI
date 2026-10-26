@@ -1,4 +1,12 @@
 // EquiGig AI - Client Application Logic
+
+// Auto-detect backend API host:
+// When served directly from FastAPI (port 8000), use same-origin relative path ('')
+// When served from Live Server (e.g. port 5500, 3000, 5173) or file://, connect to FastAPI on http://127.0.0.1:8000
+const API_BASE_URL = (typeof window !== 'undefined' && window.location.port === '8000')
+    ? ''
+    : 'http://127.0.0.1:8000';
+
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const envStatusPill = document.getElementById('envStatusPill');
@@ -178,7 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } catch (err) {
-            appendLog(`[Execution Error]: ${err.message}`, 'warning');
+            const errorMsg = (err.name === 'TypeError' || err.message === 'Failed to fetch')
+                ? 'Cannot connect to backend server. Please verify that python server.py is running on http://127.0.0.1:8000.'
+                : err.message;
+            appendLog(`[Execution Error]: ${errorMsg}`, 'warning');
             pipelineStatusText.textContent = "Execution Failed";
         } finally {
             runAgentBtn.classList.remove('loading');
@@ -418,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
         appendLog(`[Job Extractor]: Fetching and analyzing listing from ${targetLabel}...`, 'agent');
 
         try {
-            const response = await fetch('/api/extract-job', {
+            const response = await fetch(`${API_BASE_URL}/api/extract-job`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url: url || null, raw_text: rawText || null })
@@ -474,7 +485,10 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
         } catch (err) {
-            appendLog(`[Job Extractor Error]: ${err.message}`, 'warning');
+            const errorMsg = (err.name === 'TypeError' || err.message === 'Failed to fetch')
+                ? 'Cannot connect to backend server. Please verify that python server.py is running on http://127.0.0.1:8000.'
+                : err.message;
+            appendLog(`[Job Extractor Error]: ${errorMsg}`, 'warning');
         } finally {
             extractSpinner.style.display = 'none';
             extractBtnText.textContent = '✨ Search & Fill';
