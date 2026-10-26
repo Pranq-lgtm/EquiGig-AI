@@ -9,7 +9,15 @@ import os
 from typing import Dict, Any, List, Optional
 from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+for env_candidate in [
+    os.path.join(BASE_DIR, ".env"),
+    os.path.abspath(os.path.join(BASE_DIR, "..", "..", ".env")),
+    ".env"
+]:
+    if os.path.exists(env_candidate):
+        load_dotenv(env_candidate)
+        break
 
 ENDEE_API_KEY = os.getenv("ENDEE_API_KEY", "")
 ENDEE_URL = os.getenv("ENDEE_URL", "http://localhost:8080/api/v2")

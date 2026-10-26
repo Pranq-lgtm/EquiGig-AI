@@ -20,7 +20,15 @@ from urllib.parse import urlparse
 import httpx
 from dotenv import load_dotenv
 
-load_dotenv()
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+for env_candidate in [
+    os.path.join(BASE_DIR, ".env"),
+    os.path.abspath(os.path.join(BASE_DIR, "..", "..", ".env")),
+    ".env"
+]:
+    if os.path.exists(env_candidate):
+        load_dotenv(env_candidate)
+        break
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
