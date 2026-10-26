@@ -1,4 +1,8 @@
 // EquiGig AI - Client Application Logic
+
+// Backend API base URL (Render deployment)
+const API_BASE_URL = 'https://equigig-ai.onrender.com';
+
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const envStatusPill = document.getElementById('envStatusPill');
