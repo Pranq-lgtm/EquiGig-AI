@@ -34,7 +34,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for local testing
+# Enable CORS for frontend-backend communication
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -210,6 +210,6 @@ else:
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", 8000))
-    host = os.getenv("HOST", "127.0.0.1")
+    host = os.getenv("HOST", "[IP_ADDRESS]")
     print(f"Starting EquiGig FastAPI Server on http://{host}:{port}")
     uvicorn.run("server:app", host=host, port=port, reload=True)

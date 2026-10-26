@@ -14,8 +14,8 @@ COPY src ./src
 # Move working directory to the backend so Uvicorn can find server.py
 WORKDIR /app/src/backend
 
-# Expose port (default is 8000, can be overridden by hosting platform)
+# Expose default port (Render assigns dynamically via $PORT)
 EXPOSE 8000
 
-# Run the FastAPI server
-CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the FastAPI server — use shell form so $PORT is expanded at runtime
+CMD uvicorn server:app --host 0.0.0.0 --port ${PORT:-8000}

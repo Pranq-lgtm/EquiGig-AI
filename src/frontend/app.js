@@ -1,11 +1,18 @@
 // EquiGig AI - Client Application Logic
 
 // Auto-detect backend API host:
-// When served directly from FastAPI (port 8000), use same-origin relative path ('')
-// When served from Live Server (e.g. port 5500, 3000, 5173) or file://, connect to FastAPI on http://127.0.0.1:8000
-const API_BASE_URL = (typeof window !== 'undefined' && window.location.port === '8000')
-    ? ''
-    : 'http://127.0.0.1:8000';
+// In production (Render / HTTPS) or when served from FastAPI directly, use same-origin ('')
+// Only fall back to localhost:8000 when running from a local dev server (Live Server, Vite, etc.)
+const API_BASE_URL = (() => {
+    if (typeof window === 'undefined') return '';
+    const loc = window.location;
+    // Production: served over HTTPS from Render (same origin)
+    if (loc.protocol === 'https:') return '';
+    // Local: served directly from FastAPI on port 8000
+    if (loc.port === '8000') return '';
+    // Local dev server (Live Server on 5500, Vite on 5173, etc.) → proxy to local FastAPI
+    return 'http://127.0.0.1:8000';
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
