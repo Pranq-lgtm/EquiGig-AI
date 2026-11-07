@@ -202,8 +202,18 @@ def run_agent_endpoint(payload: AgentRequestSchema):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Agent execution error: {str(e)}")
 
-# Serve Static Frontend Files
+# Serve Static Frontend Files & Favicon
 frontend_dir = os.path.abspath(os.path.join(BASE_DIR, "..", "frontend"))
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon_endpoint():
+    ico_path = os.path.join(frontend_dir, "favicon.ico")
+    if os.path.exists(ico_path):
+        return FileResponse(ico_path, media_type="image/x-icon")
+    svg_path = os.path.join(frontend_dir, "favicon.svg")
+    if os.path.exists(svg_path):
+        return FileResponse(svg_path, media_type="image/svg+xml")
+    raise HTTPException(status_code=404, detail="Favicon not found")
 
 if os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
